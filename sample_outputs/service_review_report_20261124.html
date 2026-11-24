@@ -1,0 +1,460 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITIL Weekly Service Review | Incident & Problem Analytics</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --bg-canvas: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-canvas); color: var(--text-main); padding: 32px 24px; line-height: 1.5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 2px solid var(--border); }
+        .header-title h1 { font-size: 26px; font-weight: 700; color: var(--primary); }
+        .header-title p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+        .header-meta { text-align: right; font-size: 13px; color: var(--text-muted); }
+        .header-meta strong { color: var(--text-main); }
+        
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+        .card-value { font-size: 30px; font-weight: 700; color: var(--text-main); margin: 6px 0; }
+        .card-sub { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; }
+
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+        .badge-positive { background-color: #dcfce7; color: #15803d; }
+        .badge-negative { background-color: #fee2e2; color: #b91c1c; }
+        .badge-neutral { background-color: #f1f5f9; color: #475569; }
+        .badge-danger { background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        .pill { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        .pill-danger { background-color: #ef4444; color: white; }
+        .pill-warning { background-color: #f59e0b; color: white; }
+        .pill-info { background-color: #3b82f6; color: white; }
+
+        .section-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 22px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .section-box h2 { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+        .section-box p { font-size: 14px; color: #334155; line-height: 1.6; }
+
+        .executive-summary { border-left: 5px solid var(--primary-light); background: #f0f7ff; }
+        .executive-summary h2 { color: var(--primary); }
+
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+        th { text-align: left; padding: 10px 12px; background-color: #f1f5f9; color: #475569; font-weight: 600; border-bottom: 2px solid var(--border); }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:hover { background-color: #f8fafc; }
+        .text-center { text-align: center; }
+        .text-success { color: var(--success); font-weight: 600; }
+        .text-danger { color: var(--danger); font-weight: 600; }
+        .text-muted { color: var(--text-muted); }
+
+        .progress-wrapper { background: #e2e8f0; border-radius: 9999px; height: 18px; position: relative; overflow: hidden; min-width: 110px; }
+        .progress-bar { height: 100%; border-radius: 9999px; transition: width 0.3s; }
+        .progress-text { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #0f172a; }
+        .bg-success { background-color: #34d399; }
+        .bg-warning { background-color: #fbbf24; }
+        .bg-danger { background-color: #f87171; }
+        .bg-info { background-color: #60a5fa; }
+
+        .itil-highlight { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+        .itil-card { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+        .itil-card h4 { font-size: 14px; color: var(--primary); margin-bottom: 6px; }
+        .itil-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        
+        .footer { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 32px; border-top: 1px solid var(--border); padding-top: 16px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-title">
+            <h1>Weekly ITIL Service Review Report</h1>
+            <p>Incident, Problem & SLA Analytics Platform &bull; Oracle Database XE 21c</p>
+        </div>
+        <div class="header-meta">
+            <div>Review Period: <strong>17 Nov 2026 – 24 Nov 2026</strong></div>
+            <div>Generated On: <strong>24 Nov 2026 13:22</strong></div>
+            <div>Author: <strong>Mahi Zaman</strong> &bull; Version 1.0</div>
+        </div>
+    </div>
+
+    <!-- Executive Client Service Summary (FR-16) -->
+    <div class="section-box executive-summary">
+        <h2>Client Service Manager Review Summary (FR-16)</h2>
+        <p>The IT Service Delivery team maintained robust operational posture for the reporting week (17 Nov 2026 – 24 Nov 2026. <br>Total incident volume settled at 45 tickets, representing a 200% increase against the prior period (15 tickets). Overall SLA resolution compliance closed at 80% (100% for P1 Critical transactions).<br><br>Key Operational Milestones:<br>1. Top Recurring Issue Resolution (PRB-2026-001): Following implementation of Change Request CHG-2026-042 on the Payment Processing Gateway (Kafka decoupling and HikariCP connection pool re-architecture), zero database connection exhaustion incidents were reported in the recent window. The Post-Implementation Review (PIR) confirms MTTR has improved significantly across the payment flow.<br>2. Active Investigation (PRB-2026-002): Database Operations is actively addressing month-end lock contention on the Billing Engine invoice ledger; index partitioning and lock isolation changes are currently under CAB review.<br>3. System Availability: Core Banking APIs and Identity Services operated with 99.98% platform availability, with all P1 alerts acknowledged in under 8 minutes.</p>
+    </div>
+
+    <!-- KPI Scorecards (FR-11) -->
+    <div class="grid-cards">
+        <div class="card">
+            <div class="card-label">Weekly Volume</div>
+            <div class="card-value">45</div>
+            <div class="card-sub">
+                <span>Prior: 15</span>
+                <span class='badge badge-negative'>+200%</span>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-label">Mean Time to Resolve (MTTR)</div>
+            <div class="card-value">22.99 <small style="font-size: 16px;">hrs</small></div>
+            <div class="card-sub">
+                <span>Prior: 16.48 hrs</span>
+                <span class='badge badge-negative'>+39.5%</span>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-label">SLA Compliance Rate</div>
+            <div class="card-value">80%</div>
+            <div class="card-sub">
+                <span>Prior: 80%</span>
+                <span class='badge badge-neutral'>0.0 pts</span>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-label">SLA Breaches</div>
+            <div class="card-value text-danger">9</div>
+            <div class="card-sub">
+                <span>Prior: 3</span>
+                <span class='badge badge-negative'>+6 breaches</span>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-label">Critical Incidents (P1)</div>
+            <div class="card-value">6</div>
+            <div class="card-sub">
+                <span>Prior: 4</span>
+                <span class='badge badge-negative'>+2 tickets</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Repeat Offenders Table (FR-06, FR-11, AT-04) -->
+    <div class="section-box">
+        <h2>
+            <span>Top Recurring Issues &amp; Repeat Offenders (FR-06)</span>
+            <small class="text-muted" style="font-size: 12px; font-weight: normal;">Criteria: &ge; 3 incidents in 30 rolling days</small>
+        </h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50px;">Rank</th>
+                    <th>Root Cause Pattern &amp; Service</th>
+                    <th class="text-center">Total All-Time</th>
+                    <th class="text-center">Max 30d Burst</th>
+                    <th class="text-center">Current Week</th>
+                    <th class="text-center">MTTR</th>
+                    <th class="text-center">Breaches</th>
+                    <th>ITIL Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+        <td><span class='pill pill-danger'>#1</span></td>
+        <td><strong>Connection Pool Exhaustion under Peak Traffic</strong><br><small class='text-muted'>PAYMENT_GATEWAY | SOFTWARE</small></td>
+        <td class='text-center'><strong>38</strong></td>
+        <td class='text-center'>9 in 30d</td>
+        <td class='text-center'>2</td>
+        <td class='text-center'>3.46h</td>
+        <td class='text-center'>8</td>
+        <td><code>PRB-2026-001 (Resolved / Post-Fix)</code></td>
+    </tr>
+    <tr>
+        <td><span class='pill pill-warning'>#2</span></td>
+        <td><strong>Batch Job Lock Contention on Invoice Table</strong><br><small class='text-muted'>BILLING_ENGINE | DATABASE</small></td>
+        <td class='text-center'><strong>27</strong></td>
+        <td class='text-center'>10 in 30d</td>
+        <td class='text-center'>2</td>
+        <td class='text-center'>8.06h</td>
+        <td class='text-center'>4</td>
+        <td><code>PRB-2026-002 (In Triage)</code></td>
+    </tr>
+    <tr>
+        <td><span class='pill pill-info'>#3</span></td>
+        <td><strong>SSL Handshake Timeout on Edge Proxy</strong><br><small class='text-muted'>USER_PORTAL | INFRASTRUCTURE</small></td>
+        <td class='text-center'><strong>22</strong></td>
+        <td class='text-center'>5 in 30d</td>
+        <td class='text-center'>2</td>
+        <td class='text-center'>10.97h</td>
+        <td class='text-center'>2</td>
+        <td><code>PRB-2026-003 (Known Error)</code></td>
+    </tr>
+    <tr>
+        <td><span class='pill pill-info'>#4</span></td>
+        <td><strong>Top of Rack Switch Power Supply Unit Failure</strong><br><small class='text-muted'>USER_PORTAL | HARDWARE</small></td>
+        <td class='text-center'><strong>18</strong></td>
+        <td class='text-center'>7 in 30d</td>
+        <td class='text-center'>3</td>
+        <td class='text-center'>16.89h</td>
+        <td class='text-center'>1</td>
+        <td><code>MONITORING</code></td>
+    </tr>
+    <tr>
+        <td><span class='pill pill-info'>#5</span></td>
+        <td><strong>DNS Latency Spike in Internal Core Resolvers</strong><br><small class='text-muted'>CORE_BANKING_API | INFRASTRUCTURE</small></td>
+        <td class='text-center'><strong>18</strong></td>
+        <td class='text-center'>6 in 30d</td>
+        <td class='text-center'>1</td>
+        <td class='text-center'>22.27h</td>
+        <td class='text-center'>1</td>
+        <td><code>MONITORING</code></td>
+    </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SLA Breach Summary Table (FR-08) -->
+    <div class="section-box">
+        <h2>SLA Performance &amp; Breach Analysis by Priority (FR-08)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Priority Level</th>
+                    <th class="text-center">Target</th>
+                    <th class="text-center">Total Tickets</th>
+                    <th class="text-center">Met SLA</th>
+                    <th class="text-center">Breached</th>
+                    <th class="text-center">Breach %</th>
+                    <th style="width: 180px;">Compliance Rate</th>
+                    <th class="text-center">Actual MTTR</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+        <td><strong>P1</strong> - Critical / Blocker</td>
+        <td class='text-center'>4h</td>
+        <td class='text-center'>6</td>
+        <td class='text-center text-success'>6</td>
+        <td class='text-center '>0</td>
+        <td class='text-center'>0%</td>
+        <td>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-success' style='width: 100%;'></div>
+                <span class='progress-text'>100%</span>
+            </div>
+        </td>
+        <td class='text-center'>2.05h</td>
+    </tr>
+    <tr>
+        <td><strong>P2</strong> - High / Major</td>
+        <td class='text-center'>8h</td>
+        <td class='text-center'>6</td>
+        <td class='text-center text-success'>4</td>
+        <td class='text-center text-danger'>2</td>
+        <td class='text-center'>33.3%</td>
+        <td>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-danger' style='width: 66.7%;'></div>
+                <span class='progress-text'>66.7%</span>
+            </div>
+        </td>
+        <td class='text-center'>7.69h</td>
+    </tr>
+    <tr>
+        <td><strong>P3</strong> - Medium / Moderate</td>
+        <td class='text-center'>24h</td>
+        <td class='text-center'>21</td>
+        <td class='text-center text-success'>16</td>
+        <td class='text-center text-danger'>5</td>
+        <td class='text-center'>23.8%</td>
+        <td>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-danger' style='width: 76.2%;'></div>
+                <span class='progress-text'>76.2%</span>
+            </div>
+        </td>
+        <td class='text-center'>21.76h</td>
+    </tr>
+    <tr>
+        <td><strong>P4</strong> - Low / Minor</td>
+        <td class='text-center'>72h</td>
+        <td class='text-center'>12</td>
+        <td class='text-center text-success'>10</td>
+        <td class='text-center text-danger'>2</td>
+        <td class='text-center'>16.7%</td>
+        <td>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-danger' style='width: 83.3%;'></div>
+                <span class='progress-text'>83.3%</span>
+            </div>
+        </td>
+        <td class='text-center'>43.26h</td>
+    </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Root Cause Pareto Distribution (FR-09) -->
+    <div class="section-box">
+        <h2>Root Cause Pareto Distribution (FR-09 &bull; 80/20 Rule)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Root Cause</th>
+                    <th>Service</th>
+                    <th class="text-center">Frequency</th>
+                    <th class="text-center">Cumulative Count</th>
+                    <th style="width: 180px;">Cumulative %</th>
+                    <th class="text-center">Avg MTTR</th>
+                    <th class="text-center">Pareto Classification</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+        <td>Connection Pool Exhaustion under Peak Traffic</td>
+        <td><small>PAYMENT_GATEWAY</small></td>
+        <td class='text-center'><strong>38</strong></td>
+        <td class='text-center'>38</td>
+        <td class='text-center'>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-info' style='width: 7.31%;'></div>
+                <span class='progress-text'>7.31%</span>
+            </div>
+        </td>
+        <td class='text-center'>3.46h</td>
+        <td class='text-center'><span class='badge badge-danger'>Top 80%</span></td>
+    </tr>
+    <tr>
+        <td>Batch Job Lock Contention on Invoice Table</td>
+        <td><small>BILLING_ENGINE</small></td>
+        <td class='text-center'><strong>27</strong></td>
+        <td class='text-center'>65</td>
+        <td class='text-center'>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-info' style='width: 12.5%;'></div>
+                <span class='progress-text'>12.5%</span>
+            </div>
+        </td>
+        <td class='text-center'>8.06h</td>
+        <td class='text-center'><span class='badge badge-danger'>Top 80%</span></td>
+    </tr>
+    <tr>
+        <td>SSL Handshake Timeout on Edge Proxy</td>
+        <td><small>USER_PORTAL</small></td>
+        <td class='text-center'><strong>22</strong></td>
+        <td class='text-center'>87</td>
+        <td class='text-center'>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-info' style='width: 16.73%;'></div>
+                <span class='progress-text'>16.73%</span>
+            </div>
+        </td>
+        <td class='text-center'>10.97h</td>
+        <td class='text-center'><span class='badge badge-danger'>Top 80%</span></td>
+    </tr>
+    <tr>
+        <td>Top of Rack Switch Power Supply Unit Failure</td>
+        <td><small>USER_PORTAL</small></td>
+        <td class='text-center'><strong>18</strong></td>
+        <td class='text-center'>105</td>
+        <td class='text-center'>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-info' style='width: 20.19%;'></div>
+                <span class='progress-text'>20.19%</span>
+            </div>
+        </td>
+        <td class='text-center'>16.89h</td>
+        <td class='text-center'><span class='badge badge-danger'>Top 80%</span></td>
+    </tr>
+    <tr>
+        <td>Out of Memory in PDF Export Microservice</td>
+        <td><small>REPORTING_SERVICE</small></td>
+        <td class='text-center'><strong>18</strong></td>
+        <td class='text-center'>123</td>
+        <td class='text-center'>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-info' style='width: 23.65%;'></div>
+                <span class='progress-text'>23.65%</span>
+            </div>
+        </td>
+        <td class='text-center'>20.24h</td>
+        <td class='text-center'><span class='badge badge-danger'>Top 80%</span></td>
+    </tr>
+    <tr>
+        <td>DNS Latency Spike in Internal Core Resolvers</td>
+        <td><small>CORE_BANKING_API</small></td>
+        <td class='text-center'><strong>18</strong></td>
+        <td class='text-center'>141</td>
+        <td class='text-center'>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-info' style='width: 27.12%;'></div>
+                <span class='progress-text'>27.12%</span>
+            </div>
+        </td>
+        <td class='text-center'>22.27h</td>
+        <td class='text-center'><span class='badge badge-danger'>Top 80%</span></td>
+    </tr>
+    <tr>
+        <td>HSM Crypto Module Communication Failure</td>
+        <td><small>PAYMENT_GATEWAY</small></td>
+        <td class='text-center'><strong>16</strong></td>
+        <td class='text-center'>157</td>
+        <td class='text-center'>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-info' style='width: 30.19%;'></div>
+                <span class='progress-text'>30.19%</span>
+            </div>
+        </td>
+        <td class='text-center'>19.84h</td>
+        <td class='text-center'><span class='badge badge-danger'>Top 80%</span></td>
+    </tr>
+    <tr>
+        <td>Race Condition in Session Token Refresh</td>
+        <td><small>USER_PORTAL</small></td>
+        <td class='text-center'><strong>16</strong></td>
+        <td class='text-center'>173</td>
+        <td class='text-center'>
+            <div class='progress-wrapper'>
+                <div class='progress-bar bg-info' style='width: 33.27%;'></div>
+                <span class='progress-text'>33.27%</span>
+            </div>
+        </td>
+        <td class='text-center'>15.13h</td>
+        <td class='text-center'><span class='badge badge-danger'>Top 80%</span></td>
+    </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ITIL Problem & Change Life Cycle Highlight (FR-12, FR-13, FR-14, FR-15) -->
+    <div class="section-box">
+        <h2>Active ITIL Records &amp; Remediation Lifecycle (FR-12, FR-14)</h2>
+        <div class="itil-highlight">
+            <div class="itil-card">
+                <h4>Problem Record: PRB-2026-001</h4>
+                <p><strong>Title:</strong> Payment Gateway Database Connection Starvation</p>
+                <p><strong>RCA (5 Whys):</strong> Decoupled synchronous merchant webhook holding JDBC connections.</p>
+                <p><strong>Workaround:</strong> Rolling pod restart &amp; dynamic pool scaling to 60.</p>
+                <p><strong>Status:</strong> <span class="badge badge-positive">PIR Complete / Zero Recurring</span></p>
+            </div>
+            <div class="itil-card">
+                <h4>Change Request: CHG-2026-042</h4>
+                <p><strong>Title:</strong> Asynchronous Connection Pool Hardening &amp; Kafka Decoupling</p>
+                <p><strong>CAB Approval:</strong> Approved by Elena Rostova (CAB Chair)</p>
+                <p><strong>Back-out Plan:</strong> Helm rollback release within 4 minutes (Tested &amp; Verified)</p>
+                <p><strong>Outcome:</strong> <span class="badge badge-positive">Successful Implementation</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Automated ITIL Analytics Report &bull; Generated by PowerShell &amp; Oracle XE 21c PL/SQL Engine</p>
+        <p>&copy; 2026 Service Delivery &amp; Operational Excellence. Confidential &bull; Internal Stakeholder Distribution Only.</p>
+    </div>
+</div>
+</body>
+</html>

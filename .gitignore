@@ -1,0 +1,22 @@
+# PowerShell / Windows
+*.tmp
+*.temp
+*.log
+*~
+
+# Temporary Test Stores & Rejects
+data/test_*
+data/*_store.json
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.bak

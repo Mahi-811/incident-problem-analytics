@@ -1,0 +1,5 @@
+﻿"PRIORITY","PRIORITY_NAME","TARGET_HOURS","TOTAL_INCIDENTS","MET_COUNT","BREACH_COUNT","BREACH_PCT","COMPLIANCE_PCT","ACTUAL_MTTR_HOURS"
+"P1","Critical / Blocker","4","6","6","0","0","100","2.05"
+"P2","High / Major","8","6","4","2","33.3","66.7","7.69"
+"P3","Medium / Moderate","24","21","16","5","23.8","76.2","21.76"
+"P4","Low / Minor","72","12","10","2","16.7","83.3","43.26"

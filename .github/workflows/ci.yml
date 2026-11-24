@@ -1,0 +1,51 @@
+name: CI - Incident & Problem Analytics
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test-and-verify:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Generate Clean Synthetic Incidents (FR-01, FR-02, NFR-05)
+        shell: pwsh
+        run: |
+          ./generator/Generate-IncidentData.ps1 -OutputPath data/incidents.csv -Count 520 -Seed 20261124
+
+      - name: Generate Bad Schema Test Dataset (AT-02)
+        shell: pwsh
+        run: |
+          ./generator/Generate-BadData.ps1 -OutputPath data/bad_incidents.csv
+
+      - name: Run ITIL Ingestion & Validation Pipeline (FR-04, FR-05)
+        shell: pwsh
+        run: |
+          ./ingestion/Invoke-IncidentIngestion.ps1 -InputCsv data/incidents.csv -DatastorePath data/incidents_store.json -RejectCsv data/reject_incidents.csv
+
+      - name: Generate Weekly Service Review Report (FR-10, FR-11, FR-16)
+        shell: pwsh
+        run: |
+          ./reporting/Generate-ServiceReviewReport.ps1 -StartDate (Get-Date "2026-11-17") -EndDate (Get-Date "2026-11-24") -DatastorePath data/incidents_store.json -OutputDir sample_outputs
+
+      - name: Run Full Acceptance Test Suite (AT-01 to AT-07)
+        shell: pwsh
+        run: |
+          ./tests/Run-AcceptanceTests.ps1
+
+      - name: Verify Windows Task Scheduler Registration Dry-Run (FR-17)
+        shell: pwsh
+        run: |
+          ./scheduler/Register-ScheduledReport.ps1 -DryRun
+
+      - name: Upload HTML & CSV Service Review Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-review-reports
+          path: sample_outputs/

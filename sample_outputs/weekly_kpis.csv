@@ -1,0 +1,7 @@
+﻿"METRIC","CURRENT_PERIOD","PRIOR_PERIOD","VARIANCE_DELTA"
+"Total Incident Volume","45","15","200%"
+"Mean Time to Resolve (MTTR)","22.99 hrs","16.48 hrs","39.5%"
+"SLA Compliance Rate","80%","80%","0 pts"
+"SLA Breaches","9","3","6"
+"P1 Critical Incidents","6","4","2"
+"P2 Major Incidents","6","3","3"
