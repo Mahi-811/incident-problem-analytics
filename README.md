@@ -1,8 +1,8 @@
 # ITIL Incident, Problem and Recurring-Issue Analytics
 
-[![CI - Incident & Problem Analytics](https://github.com/YOUR_USERNAME/incident-problem-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/incident-problem-analytics/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/Version-1.0-blue.svg)](https://github.com)
-[![Author](https://img.shields.io/badge/Author-Mahi%20Zaman-orange.svg)](https://github.com)
+[![CI - Incident & Problem Analytics](https://github.com/Mahi-811/incident-problem-analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/Mahi-811/incident-problem-analytics/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/Version-1.0-blue.svg)](https://github.com/Mahi-811/incident-problem-analytics)
+[![Author](https://img.shields.io/badge/Author-Mahi%20Zaman-orange.svg)](https://github.com/Mahi-811)
 [![Date](https://img.shields.io/badge/Date-24%20Nov%202026-brightgreen.svg)](https://github.com)
 [![Oracle](https://img.shields.io/badge/Oracle-Database%20XE%2021c-red.svg)](https://www.oracle.com/database/technologies/xe-downloads.html)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207%2B-blue.svg)](https://microsoft.com/powershell)
@@ -263,7 +263,7 @@ Follow these steps to initialize and push this repository to GitHub:
 3. Create a new repository on [GitHub](https://github.com/new) named `incident-problem-analytics`.
 4. Link the remote and push:
    ```powershell
-   git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/incident-problem-analytics.git
+   git remote add origin https://github.com/Mahi-811/incident-problem-analytics.git
    git push -u origin main
    ```
 
